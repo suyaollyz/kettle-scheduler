@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.kettle.scheduler.dao.KettleJobDao">
+	<resultMap type="cn.kettle.scheduler.kettle.KettleJobBean" id="KettleJobBeanMap">
+		<result column="JOB_ID"               property="jobId"/>
+		<result column="DIRECTORY"            property="directory"/>
+		<result column="NAME"                 property="name"/>
+		<result column="DESCRIPTION"          property="description"/>
+		<result column="EXTENDED_DESCRIPTION" property="extendedDescription"/>
+		<result column="STATE"                property="state"/>
+		<result column="EXP"                  property="exp"/>
+		<result column="CREATED_USER"         property="createdUser"/>
+		<result column="CREATED_TIME"         property="createdTime"/>
+		<result column="MODIFIED_USER"        property="modifiedUser"/>
+		<result column="MODIFIED_TIME"        property="modifiedTime"/>
+		<result column="RUN_STATUS"           property="runStatus"/>
+		<result column="LAST_UPDATE"          property="lastUpdate"/>
+		<result column="AUTO_RESTART_NUM"     property="autoRestartNum"/>
+	</resultMap>
+	<select id="selectAllJob" resultMap="KettleJobBeanMap">
+		SELECT 
+		  JOB_ID,
+		  DIRECTORY,
+		  NAME,
+		  DESCRIPTION,
+		  EXTENDED_DESCRIPTION,
+		  STATE,
+		  EXP,
+		  CREATED_USER,
+		  CREATED_TIME,
+		  MODIFIED_USER,
+		  MODIFIED_TIME,
+		  RUN_STATUS,
+		  LAST_UPDATE,
+		  AUTO_RESTART_NUM
+		FROM KETTLE_JOB
+		WHERE STATE IN(0, 1)
+	</select>
+	
+	<select id="selectJobById" resultMap="KettleJobBeanMap">
+		SELECT 
+		  JOB_ID,
+		  DIRECTORY,
+		  NAME,
+		  DESCRIPTION,
+		  EXTENDED_DESCRIPTION,
+		  STATE,
+		  EXP,
+		  CREATED_USER,
+		  CREATED_TIME,
+		  MODIFIED_USER,
+		  MODIFIED_TIME,
+		  RUN_STATUS,
+		  LAST_UPDATE,
+		  AUTO_RESTART_NUM
+		FROM KETTLE_JOB	
+		WHERE JOB_ID=#{jobId, jdbcType=VARCHAR}
+		AND STATE IN(0, 1)
+	</select>
+	<!-- 向数据为中插入一条Kettle Job记录 -->
+	<insert id="insertJob" parameterType="cn.kettle.scheduler.kettle.KettleJobBean">
+		INSERT INTO KETTLE_JOB(
+			JOB_ID,
+			DIRECTORY,
+			NAME,
+			DESCRIPTION,
+			EXTENDED_DESCRIPTION,
+			STATE,
+			EXP,
+			CREATED_USER,
+			CREATED_TIME<!-- ,
+			MODIFIED_USER,
+			MODIFIED_TIME,
+			RUN_STATUS,
+			LAST_UPDATE,
+			AUTO_RESTART_NUM -->
+		)VALUES(
+			#{jobId, jdbcType=VARCHAR},
+			#{directory, jdbcType=VARCHAR},
+			#{name, jdbcType=VARCHAR},
+			#{description, jdbcType=CLOB},
+			#{extendedDescription, jdbcType=CLOB},
+			#{state, jdbcType=NUMERIC},
+			#{exp, jdbcType=VARCHAR},
+			#{createdUser, jdbcType=VARCHAR},
+			sysdate<!-- ,
+			#{modifiedUser, jdbcType=VARCHAR},
+			#{modifiedTime, jdbcType=TIMESTAMP},
+			#{runStatus, jdbcType=NUMERIC},
+			#{lastUpdate, jdbcType=TIMESTAMP},
+			#{autoRestartNum, jdbcType=NUMERIC} -->
+		)
+	</insert>
+	
+	<update id="updateJob" parameterType="cn.kettle.scheduler.kettle.KettleJobBean">
+		UPDATE KETTLE_JOB SET
+			DESCRIPTION=#{description, jdbcType=CLOB},
+			EXTENDED_DESCRIPTION=#{extendedDescription, jdbcType=CLOB},
+			STATE=#{state, jdbcType=NUMERIC},
+			EXP=#{exp, jdbcType=VARCHAR},
+			MODIFIED_USER=#{modifiedUser, jdbcType=VARCHAR},
+			MODIFIED_TIME=sysdate
+		WHERE JOB_ID=#{jobId, jdbcType=VARCHAR}
+	</update>
+	
+	<update id="deleteJob" parameterType="cn.kettle.scheduler.kettle.KettleJobBean">
+		UPDATE KETTLE_JOB SET
+			STATE=2,
+			MODIFIED_USER=#{modifiedUser, jdbcType=VARCHAR},
+			MODIFIED_TIME=sysdate
+		WHERE JOB_ID=#{jobId, jdbcType=VARCHAR}
+	</update>
+	<update id="updateJobToRunning" parameterType="cn.kettle.scheduler.kettle.KettleJobBean">
+		UPDATE KETTLE_JOB SET
+			RUN_STATUS = #{runStatus, jdbcType=NUMERIC},
+			LAST_UPDATE = sysdate
+		WHERE JOB_ID=#{jobId, jdbcType=VARCHAR}
+		AND RUN_STATUS in(${@cn.kettle.scheduler.kettle.KettleJobBean@RUNSTATUS_SUCCESS}, ${@cn.kettle.scheduler.kettle.KettleJobBean@RUNSTATUS_ERROR})
+	</update>
+	<update id="updateJobToStopped" parameterType="cn.kettle.scheduler.kettle.KettleJobBean">
+		UPDATE KETTLE_JOB SET
+			RUN_STATUS = #{runStatus, jdbcType=NUMERIC},
+			LAST_UPDATE = sysdate
+		WHERE JOB_ID=#{jobId, jdbcType=VARCHAR}
+		AND RUN_STATUS in(${@cn.kettle.scheduler.kettle.KettleJobBean@RUNSTATUS_RUNNING})
+	</update>
+</mapper>

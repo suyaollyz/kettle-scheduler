@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+  <settings>
+    <!-- 这个配置使全局的映射器启用或禁用缓存。默认true -->
+    <setting name="cacheEnabled" value="true"/>
+    <!-- 全局启用或禁用延迟加载。默认true，为true的会使用cglib作代理-->
+    <setting name="lazyLoadingEnabled" value="false"/>
+    <!-- 允许或不允许多种结果集从一个单独的语句中返回。默认true -->
+    <setting name="multipleResultSetsEnabled" value="true"/>
+    <!-- 使用列标签代替列名。默认true -->
+    <setting name="useColumnLabel" value="true"/>
+    <!-- 允许JDBC支持生成的键。需要适合的驱动。默认false -->
+    <setting name="useGeneratedKeys" value="false"/>
+    <!-- 。REUSE执行器重用预处理语句。BATCH执行器重用语句和批量更新 。默认SIMPLE-->
+    <setting name="defaultExecutorType" value="SIMPLE"/>
+    <!-- 设置超时时间，它决定驱动等待一个数据库响应的时间。 -->
+    <setting name="defaultStatementTimeout" value="25000"/>
+  </settings>
+
+  <typeHandlers>
+  </typeHandlers>
+
+  <mappers>
+  </mappers>
+</configuration>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.kettle.scheduler.dao.KettleJobRunLogDao">
+	<resultMap type="cn.kettle.scheduler.kettle.KettleJobRunLogBean" id="KettleJobRunLogBeanMap">
+		<result column="LOG_ID"               property="logId"/>
+		<result column="JOB_ID"               property="jobId"/>
+		<result column="START_TIME"           property="startTime"/>
+		<result column="END_TIME"             property="endTime"/>
+		<result column="RESULT"               property="result"/>
+		<result column="LOG_FILE"             property="logFile"/>
+	</resultMap>
+	<!-- 根据运行ID，查找指定的运行记录 -->
+	<select id="selectLogById" resultMap="KettleJobRunLogBeanMap">
+		SELECT 
+		  LOG_ID,
+          JOB_ID,
+          START_TIME,
+          END_TIME,
+          RESULT,
+          LOG_FILE
+		FROM KETTLE_JOB_RUN_LOG	
+		WHERE LOG_ID=#{logId, jdbcType=VARCHAR}
+	</select>
+	<!-- 根据任务ID，查找任务的所有运行记录 -->
+	<select id="selectLogsByJobId" resultMap="KettleJobRunLogBeanMap">
+		SELECT * FROM (
+			SELECT T.*, ROWNUM RN FROM (
+			   SELECT 
+				 LOG_ID,
+				 JOB_ID,
+				 START_TIME,
+				 END_TIME,
+				 RESULT,
+				 LOG_FILE
+			   FROM KETTLE_JOB_RUN_LOG	
+			   WHERE JOB_ID=#{jobId, jdbcType=VARCHAR}
+			   <if test="fromTime!=null and fromTime!='' ">
+			   AND START_TIME &gt;= TO_DATE(#{fromTime, jdbcType=DATE}, 'yyyy-mm-dd')
+			   </if>
+			   <if test="toTime and toTime!='' ">
+			   AND START_TIME &lt; TO_DATE(#{toTime, jdbcType=DATE}, 'yyyy-mm-dd')+1
+			   </if>
+			   ORDER BY START_TIME DESC
+			) T
+		)
+		WHERE RN &gt; #{rows, jdbcType=NUMERIC}*(#{page, jdbcType=NUMERIC}-1) AND RN &lt;= #{rows, jdbcType=NUMERIC}*#{page, jdbcType=NUMERIC}
+	</select>
+	<!-- 根据任务ID，查找任务的所有运行记录数 -->
+	<select id="countLogsByJobId" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM KETTLE_JOB_RUN_LOG
+		WHERE JOB_ID=#{jobId, jdbcType=VARCHAR}
+	    <if test="fromTime!=null and fromTime!='' ">
+	    AND START_TIME &gt;= TO_DATE(#{fromTime, jdbcType=DATE}, 'yyyy-mm-dd')
+	    </if>
+	    <if test="toTime and toTime!='' ">
+	    AND START_TIME &lt; TO_DATE(#{toTime, jdbcType=DATE}, 'yyyy-mm-dd')+1
+	    </if>
+	</select>
+	
+	<!-- 向数据为中插入一条Kettle Job运行记录 -->
+	<insert id="insertLog" parameterType="cn.kettle.scheduler.kettle.KettleJobRunLogBean">
+		INSERT INTO KETTLE_JOB_RUN_LOG(
+			LOG_ID,
+            JOB_ID,
+            START_TIME,
+            END_TIME,
+            RESULT,
+            LOG_FILE
+		)VALUES(
+			#{logId, jdbcType=VARCHAR},
+			#{jobId, jdbcType=VARCHAR},
+			#{startTime, jdbcType=TIMESTAMP},
+			#{endTime, jdbcType=TIMESTAMP},
+			#{result, jdbcType=VARCHAR},
+			#{logFile, jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<update id="updateLog" parameterType="cn.kettle.scheduler.kettle.KettleJobRunLogBean">
+		UPDATE KETTLE_JOB_RUN_LOG SET
+			END_TIME=#{endTime, jdbcType=TIMESTAMP},
+			RESULT=#{result, jdbcType=VARCHAR}
+		WHERE LOG_ID=#{logId, jdbcType=VARCHAR}
+	</update>
+</mapper>

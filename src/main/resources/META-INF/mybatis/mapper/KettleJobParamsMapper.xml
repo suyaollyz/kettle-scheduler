@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.kettle.scheduler.dao.KettleJobParamsDao">
+	<resultMap type="cn.kettle.scheduler.kettle.KettleJobParamBean" id="KettleJobParamBeanMap">
+		<result column="PARAM_ID"             property="paramId"/>
+		<result column="JOB_ID"               property="jobId"/>
+		<result column="PARAM_CODE"           property="paramCode"/>
+		<result column="PARAM_VALUE"          property="paramValue"/>
+		<result column="DESCRIPTION"          property="description"/>
+		<result column="EXTENDED_DESCRIPTION" property="extendedDescription"/>
+		<result column="STATE"                property="state"/>
+		<result column="CREATED_USER"         property="createdUser"/>
+		<result column="CREATED_TIME"         property="createdTime"/>
+		<result column="MODIFIED_USER"        property="modifiedUser"/>
+		<result column="MODIFIED_TIME"        property="modifiedTime"/>
+	</resultMap>
+	<select id="selectParamById" resultMap="KettleJobParamBeanMap">
+		SELECT 
+		  PARAM_ID,
+		  JOB_ID,
+		  PARAM_CODE,
+		  PARAM_VALUE,
+		  DESCRIPTION,
+		  EXTENDED_DESCRIPTION,
+		  STATE,
+		  CREATED_USER,
+		  CREATED_TIME,
+		  MODIFIED_USER,
+		  MODIFIED_TIME
+		FROM KETTLE_JOB_PARAMS	
+		WHERE PARAM_ID=#{paramId, jdbcType=VARCHAR}
+		AND STATE IN(0, 1)
+	</select>
+	<select id="selectParamsByJobId" resultMap="KettleJobParamBeanMap">
+		SELECT 
+		  PARAM_ID,
+		  JOB_ID,
+		  PARAM_CODE,
+		  PARAM_VALUE,
+		  DESCRIPTION,
+		  EXTENDED_DESCRIPTION,
+		  STATE,
+		  CREATED_USER,
+		  CREATED_TIME,
+		  MODIFIED_USER,
+		  MODIFIED_TIME
+		FROM KETTLE_JOB_PARAMS	
+		WHERE JOB_ID=#{jobId, jdbcType=VARCHAR}
+		AND STATE IN(0, 1)
+	</select>
+	
+	<!-- 向数据为中插入一条Kettle Job记录 -->
+	<insert id="insertParam" parameterType="cn.kettle.scheduler.kettle.KettleJobParamBean">
+		INSERT INTO KETTLE_JOB_PARAMS(
+			PARAM_ID,
+			JOB_ID,
+			PARAM_CODE,
+			PARAM_VALUE,
+			DESCRIPTION,
+			EXTENDED_DESCRIPTION,
+			STATE,
+			CREATED_USER,
+			CREATED_TIME<!-- ,
+			MODIFIED_USER,
+			MODIFIED_TIME -->
+		)VALUES(
+			#{paramId, jdbcType=VARCHAR},
+			#{jobId, jdbcType=VARCHAR},
+			#{paramCode, jdbcType=VARCHAR},
+			#{paramValue, jdbcType=VARCHAR},
+			#{description, jdbcType=CLOB},
+			#{extendedDescription, jdbcType=CLOB},
+			#{state, jdbcType=NUMERIC},
+			#{createdUser, jdbcType=VARCHAR},
+			sysdate<!-- ,
+			#{modifiedUser, jdbcType=VARCHAR},
+			#{modifiedTime, jdbcType=TIMESTAMP},
+			#{runStatus, jdbcType=NUMERIC},
+			#{lastUpdate, jdbcType=TIMESTAMP},
+			#{autoRestartNum, jdbcType=NUMERIC} -->
+		)
+	</insert>
+	<update id="updateParam" parameterType="cn.kettle.scheduler.kettle.KettleJobParamBean">
+		UPDATE KETTLE_JOB_PARAMS SET
+			PARAM_VALUE=#{paramValue, jdbcType=VARCHAR},
+			DESCRIPTION=#{description, jdbcType=CLOB},
+			EXTENDED_DESCRIPTION=#{extendedDescription, jdbcType=CLOB},
+			STATE=#{state, jdbcType=NUMERIC},
+			MODIFIED_USER=#{modifiedUser, jdbcType=VARCHAR},
+			MODIFIED_TIME=sysdate
+		WHERE PARAM_ID=#{paramId, jdbcType=VARCHAR}
+	</update>
+	<update id="deleteParam">
+		UPDATE KETTLE_JOB_PARAMS SET
+			STATE=2,
+			MODIFIED_USER=#{modifiedUser, jdbcType=VARCHAR},
+			MODIFIED_TIME=sysdate
+		WHERE PARAM_ID=#{paramId, jdbcType=VARCHAR}
+	</update>
+	<update id="deleteParamsByJobId">
+		UPDATE KETTLE_JOB_PARAMS SET
+			STATE=2,
+			MODIFIED_USER=#{modifiedUser, jdbcType=VARCHAR},
+			MODIFIED_TIME=sysdate
+		WHERE JOB_ID=#{jobId, jdbcType=VARCHAR}
+	</update>
+</mapper>

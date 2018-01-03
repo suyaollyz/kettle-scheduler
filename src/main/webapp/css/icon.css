@@ -1,0 +1,30 @@
+.icon-kettle-job{
+	background:url('../icons/kettle_job.png') no-repeat center center;
+}
+.icon-kettle-job-tree{
+	background:url('../icons/kettle_job_tree.png') no-repeat center center;
+}
+.icon-kettle-transformation{
+	background:url('../icons/kettle_transformation.png') no-repeat center center;
+}
+.icon-kettle-transformation-tree{
+	background:url('../icons/kettle_transformation_tree.png') no-repeat center center;
+}
+.icon-quartz{
+	background:url('../icons/quartz.png') no-repeat center center;
+}
+.icon-quartz-all{
+	background:url('../icons/quartz_all.png') no-repeat center center;
+}
+.icon-pause{
+	background:url('../icons/pause.png') no-repeat center center;
+}
+.icon-immediately{
+	background:url('../icons/pause_immediately.png') no-repeat center center;
+}
+.icon-start{
+	background:url('../icons/start.png') no-repeat center center;
+}
+.icon-list{
+	background:url('../icons/list.png') no-repeat center center;
+}
