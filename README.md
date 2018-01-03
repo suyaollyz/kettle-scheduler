@@ -25,7 +25,7 @@ kettle-scheduler本身不包含kettle的任何运行环境，因此需要开发�
 
 7、kettle资源库连接配置：context.properties中的repositoryName
 
-7、tomcat需要进行的配置如下：
+8、tomcat需要进行的配置如下：
 	
 	1) 进入tomcat安装目录下的bin目录
 	2) 在catalina.properties文件中找到common.loader所在行，在最后边添加Kettle lib目录下的所有jar包，例如：/home/kettle/pentaho-kettle-5.4.1.8-R/lib/*.jar
